@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Đấu Trường Đường Cao Trên Lưới Ô Vuông - Phiên Bản Đa Dạng Nhiều Vòng</title>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --primary: #1d4ed8;
+      --primary-dark: #1e3a8a;
+      --accent: #0284c7;
+      --success: #15803d;
+      --success-bg: #dcfce7;
+      --danger: #b91c1c;
+      --danger-bg: #fee2e2;
+      --warn: #b45309;
+      --warn-bg: #fef3c7;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #cbd5e1;
+      --team-a: #2563eb;
+      --team-a-bg: #eff6ff;
+      --team-b: #e11d48;
+      --team-b-bg: #fff1f2;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 12px 14px 44px;
+    }
+
+    header.topbar {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary), var(--accent));
+      color: #fff;
+      border-radius: 18px;
+      padding: 16px 20px;
+      box-shadow: 0 10px 26px rgba(29, 78, 216, 0.22);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    header.topbar h1 {
+      margin: 0;
+      font-size: clamp(1.15rem, 3.3vw, 1.6rem);
+      font-weight: 900;
+      letter-spacing: -0.01em;
+    }
+
+    header.topbar p {
+      margin: 4px 0 0;
+      font-size: 0.9rem;
+      opacity: 0.95;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.18);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.42);
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-weight: 700;
+      font-size: 0.86rem;
+      cursor: pointer;
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.28);
+    }
+
+    .scoreboard {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .team-card {
+      background: var(--card);
+      border: 2.5px solid var(--border);
+      border-radius: 16px;
+      padding: 12px 16px;
+      transition: all 0.18s ease;
+      cursor: pointer;
+    }
+
+    .team-card.team-a.active-turn {
+      border-color: var(--team-a);
+      background: var(--team-a-bg);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.16);
+    }
+
+    .team-card.team-b.active-turn {
+      border-color: var(--team-b);
+      background: var(--team-b-bg);
+      box-shadow: 0 6px 16px rgba(225, 29, 72, 0.16);
+    }
+
+    .team-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .team-name-input {
+      font-size: 1.04rem;
+      font-weight: 800;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text);
+      border-radius: 6px;
+      padding: 2px 6px;
+      width: 155px;
+      max-width: 100%;
+    }
+
+    .team-name-input:focus {
+      outline: none;
+      background: #fff;
+      border-color: var(--border);
+    }
+
+    .turn-pill {
+      font-size: 0.74rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .team-card.team-a.active-turn .turn-pill {
+      background: var(--team-a);
+      color: #fff;
+    }
+
+    .team-card.team-b.active-turn .turn-pill {
+      background: var(--team-b);
+      color: #fff;
+    }
+
+    .team-meta {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .team-score {
+      font-size: 1.7rem;
+      font-weight: 900;
+    }
+
+    .team-card.team-a .team-score { color: var(--team-a); }
+    .team-card.team-b .team-score { color: var(--team-b); }
+
+    .power-badge {
+      font-size: 0.8rem;
+      font-weight: 700;
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fcd34d;
+      padding: 3px 9px;
+      border-radius: 999px;
+    }
+
+    .round-bar {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .round-btn {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 8px;
+      font-weight: 800;
+      font-size: 0.84rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.16s ease;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .round-btn span.sub {
+      display: block;
+      font-size: 0.74rem;
+      font-weight: 600;
+      opacity: 0.85;
+      margin-top: 2px;
+    }
+
+    .round-btn.active {
+      border-color: var(--primary);
+      background: #eff6ff;
+      color: var(--primary-dark);
+      box-shadow: 0 3px 10px rgba(29, 78, 216, 0.12);
+    }
+
+    .card {
+      margin-top: 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+    }
+
+    .q-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .q-tag {
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--primary);
+      background: #dbeafe;
+      padding: 5px 11px;
+      border-radius: 8px;
+    }
+
+    .q-progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .timer-pill {
+      font-size: 0.84rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fcd34d;
+    }
+
+    .timer-pill.urgent {
+      background: #fee2e2;
+      color: #991b1b;
+      border-color: #fca5a5;
+    }
+
+    .q-progress {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .prompt {
+      font-size: clamp(1rem, 2.5vw, 1.18rem);
+      font-weight: 700;
+      margin: 6px 0 14px;
+    }
+
+    .prompt .highlight {
+      color: var(--primary-dark);
+      background: #fef08a;
+      padding: 1px 7px;
+      border-radius: 6px;
+    }
+
+    .canvas-wrap {
+      width: 100%;
+      background: #f8fafc;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 8px;
+    }
+
+    svg.grid-svg {
+      width: 100%;
+      max-width: 560px;
+      height: auto;
+      display: block;
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    .options-grid {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    @media (max-width: 640px) {
+      .round-bar {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 560px) {
+      .scoreboard, .options-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .opt-btn {
+      background: #fff;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 13px 14px;
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      min-height: 50px;
+    }
+
+    .opt-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: #f8fafc;
+    }
+
+    .opt-btn:disabled {
+      cursor: default;
+      opacity: 0.92;
+    }
+
+    .opt-btn.correct {
+      background: var(--success-bg);
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    .opt-btn.wrong {
+      background: var(--danger-bg);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .draw-tools {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .tool-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-secondary { background: #e2e8f0; color: var(--text); }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-warn { background: #d97706; color: #fff; }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .feedback {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      display: none;
+    }
+
+    .feedback.show { display: block; }
+    .feedback.ok { background: var(--success-bg); border: 1px solid #86efac; color: #14532d; }
+    .feedback.err { background: var(--danger-bg); border: 1px solid #fca5a5; color: #7f1d1d; }
+    .feedback.info { background: var(--warn-bg); border: 1px solid #fcd34d; color: #78350f; }
+
+    .footer-nav {
+      margin-top: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .helper-note {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .rule-box {
+      margin-top: 14px;
+      background: #eff6ff;
+      border-left: 4px solid var(--primary);
+      padding: 10px 14px;
+      border-radius: 0 10px 10px 0;
+      font-size: 0.9rem;
+      color: #1e3a8a;
+    }
+
+    .summary-box {
+      text-align: center;
+      padding: 12px 6px;
+    }
+
+    .winner-banner {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--primary-dark);
+      margin: 8px 0;
+    }
+
+    .round-breakdown {
+      margin: 14px auto;
+      max-width: 520px;
+      text-align: left;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 0.92rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div>
+        <h1>ĐẤU TRƯỜNG ĐƯỜNG CAO TRÊN LƯỚI Ô VUÔNG</h1>
+        <p>4 vòng chơi đa dạng • Thi đua đội nhóm • Chạy mượt trên máy tính và điện thoại</p>
+      </div>
+      <div class="top-actions">
+        <button class="btn-ghost" onclick="swapTurnManual()">Đổi lượt nhóm</button>
+        <button class="btn-ghost" onclick="resetMatch()">Ván mới</button>
+      </div>
+    </header>
+
+    <section class="scoreboard" aria-label="Bảng điểm các nhóm">
+      <div class="team-card team-a active-turn" id="cardA" onclick="setTurn('A')">
+        <div class="team-top">
+          <input class="team-name-input" id="nameA" value="Đội Tia Chớp" aria-label="Tên Đội 1" onclick="event.stopPropagation()" />
+          <span class="turn-pill" id="pillA">ĐANG ĐẾN LƯỢT</span>
+        </div>
+        <div class="team-meta">
+          <div class="team-score" id="scoreA">0 điểm</div>
+          <span class="power-badge" id="hintBadgeA">Gợi ý: 1</span>
+        </div>
+      </div>
+
+      <div class="team-card team-b" id="cardB" onclick="setTurn('B')">
+        <div class="team-top">
+          <input class="team-name-input" id="nameB" value="Đội Ngôi Sao" aria-label="Tên Đội 2" onclick="event.stopPropagation()" />
+          <span class="turn-pill" id="pillB">CHỜ LƯỢT</span>
+        </div>
+        <div class="team-meta">
+          <div class="team-score" id="scoreB">0 điểm</div>
+          <span class="power-badge" id="hintBadgeB">Gợi ý: 1</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="round-bar" role="tablist" aria-label="Các vòng thi đấu">
+      <button class="round-btn active" data-round="round1" onclick="switchRound('round1')">
+        Vòng 1: Bắt Đỉnh - Đáy
+        <span class="sub">Nhận diện &amp; gọi tên</span>
+      </button>
+      <button class="round-btn" data-round="round2" onclick="switchRound('round2')">
+        Vòng 2: Truy Tìm Lỗi Sai
+        <span class="sub">Góc tù &amp; vuông góc</span>
+      </button>
+      <button class="round-btn" data-round="round3" onclick="switchRound('round3')">
+        Vòng 3: Chạm Vẽ Đỉnh Cao
+        <span class="sub">Nối đoạn trên lưới</span>
+      </button>
+      <button class="round-btn" data-round="round4" onclick="switchRound('round4')">
+        Vòng 4: Thử Thách Nhân Đôi
+        <span class="sub">Tốc độ • 20 điểm/câu</span>
+      </button>
+    </div>
+
+    <section class="card" id="gameCard">
+      <div class="q-header">
+        <span class="q-tag" id="roundTag">Vòng 1 • Bắt đỉnh - bắt đáy</span>
+        <div class="q-progress-wrap">
+          <span class="timer-pill" id="timerPill">Thời gian: 30s</span>
+          <span class="q-progress" id="progressText">Câu 1 / 4</span>
+        </div>
+      </div>
+
+      <div class="prompt" id="promptText">Đang tải câu hỏi...</div>
+
+      <div class="canvas-wrap">
+        <svg id="board" class="grid-svg" viewBox="0 0 480 300" aria-label="Lưới ô vuông hình tam giác"></svg>
+      </div>
+
+      <div id="drawControls" class="draw-tools" style="display:none;">
+        <div class="tool-group">
+          <button class="btn btn-secondary" onclick="undoDraw()">Hoàn tác</button>
+          <button class="btn btn-secondary" onclick="clearDraw()">Xóa nét vẽ</button>
+          <button class="btn btn-warn" id="hintBtn" onclick="useTeamHint()">Dùng Gợi ý nhóm</button>
+        </div>
+        <div class="tool-group">
+          <button class="btn btn-success" id="checkDrawBtn" onclick="checkDrawing()">Kiểm tra đường cao</button>
+        </div>
+      </div>
+      <div id="drawHint" class="helper-note" style="display:none;">
+        Thao tác đội: Chạm <strong>2 nút giao lưới ô vuông</strong> (đỉnh đối diện và điểm vuông góc trên đáy hoặc phần kéo dài của đáy), sau đó bấm <em>Kiểm tra đường cao</em>.
+      </div>
+
+      <div id="quizExtraControls" class="draw-tools" style="display:none; justify-content: flex-end;">
+        <button class="btn btn-warn" id="quizHintBtn" onclick="useTeamHint()">Dùng Gợi ý nhóm (loại 1 đáp án)</button>
+      </div>
+
+      <div class="options-grid" id="optionsBox"></div>
+
+      <div class="feedback" id="feedbackBox"></div>
+
+      <div class="footer-nav">
+        <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()">← Câu trước</button>
+        <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Câu tiếp theo →</button>
+      </div>
+
+      <div class="rule-box" id="roundRuleBox">
+        <strong>Thể lệ vòng chơi:</strong> Trả lời đúng cộng điểm cho đội đang giữ lượt. Mỗi đội có <strong>1 thẻ Gợi ý</strong> cho cả trận đấu để dùng ở thời điểm quyết định.
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const CELL = 40;
+    const OX = 40;
+    const OY = 20;
+    const COLS = 10;
+    const ROWS = 6;
+
+    function gx(col) { return OX + col * CELL; }
+    function gy(row) { return OY + row * CELL; }
+
+    const ROUNDS = {
+      round1: {
+        title: "Vòng 1: Bắt Đỉnh - Bắt Đáy",
+        points: 10,
+        seconds: 30,
+        rule: "Vòng 1 (10 điểm/câu): Xác định nhanh đỉnh đối diện, cạnh đáy và tên đường cao trên lưới ô vuông.",
+        questions: [
+          {
+            tag: "Vòng 1 • Tam giác DEG",
+            prompt: "Cho tam giác DEG trên lưới ô vuông. Nếu chọn đáy là <span class='highlight'>GE</span>, đỉnh nào đối diện với đáy GE?",
+            vertices: {
+              D: { c: 2, r: 1, dx: -14, dy: -6 },
+              E: { c: 5, r: 3, dx: 10, dy: 4 },
+              G: { c: 2, r: 5, dx: -16, dy: 14 }
+            },
+            highlightBase: ["G", "E"],
+            options: ["Đỉnh D", "Đỉnh E", "Đỉnh G", "Không có đỉnh đối diện"],
+            answer: 0,
+            hintText: "Cạnh đáy GE gồm hai đỉnh G và E, đỉnh còn lại là chữ cái thứ ba.",
+            explain: "Cạnh đáy GE nối G và E, nên đỉnh đối diện với đáy GE chính là đỉnh D."
+          },
+          {
+            tag: "Vòng 1 • Tam giác DEG",
+            prompt: "Với tam giác DEG, khi chọn cạnh <span class='highlight'>DG</span> làm đáy thì đỉnh nào đối diện với đáy DG?",
+            vertices: {
+              D: { c: 2, r: 1, dx: -14, dy: -6 },
+              E: { c: 5, r: 3, dx: 10, dy: 4 },
+              G: { c: 2, r: 5, dx: -16, dy: 14 }
+            },
+            highlightBase: ["D", "G"],
+            options: ["Đỉnh D", "Đỉnh G", "Đỉnh E", "Cả đỉnh D và E"],
+            answer: 2,
+            hintText: "Loại bỏ hai đỉnh D và G nằm trên cạnh đáy, đội sẽ thấy đỉnh đối diện.",
+            explain: "Đáy DG có hai đầu mút D và G, vậy đỉnh đối diện với đáy DG là đỉnh E."
+          },
+          {
+            tag: "Vòng 1 • Tam giác IKL",
+            prompt: "Cho tam giác IKL có góc tù ở đỉnh I. Nếu chọn đáy là <span class='highlight'>IK</span>, đỉnh nào đối diện với đáy IK?",
+            vertices: {
+              I: { c: 3, r: 2, dx: -14, dy: -6 },
+              K: { c: 6, r: 5, dx: -12, dy: 16 },
+              L: { c: 8, r: 2, dx: 10, dy: -4 }
+            },
+            highlightBase: ["I", "K"],
+            options: ["Đỉnh I", "Đỉnh K", "Đỉnh L", "Không có đỉnh đối diện"],
+            answer: 2,
+            hintText: "Dù tam giác có góc tù, đỉnh đối diện với cạnh IK vẫn là đỉnh còn lại của tam giác.",
+            explain: "Đỉnh đối diện với cạnh IK của tam giác IKL là đỉnh L."
+          },
+          {
+            tag: "Vòng 1 • Tên đường cao",
+            prompt: "Trong tam giác DEG có đáy GE, đường cao hạ từ đỉnh D vuông góc với GE tại H được gọi là gì?",
+            vertices: {
+              D: { c: 2, r: 1, dx: -14, dy: -6 },
+              E: { c: 5, r: 3, dx: 10, dy: 4 },
+              G: { c: 2, r: 5, dx: -16, dy: 14 }
+            },
+            highlightBase: ["G", "E"],
+            options: ["Đường cao GE", "Đường cao DH", "Đường cao DE", "Đường cao GH"],
+            answer: 1,
+            hintText: "Tên đường cao ghép từ đỉnh xuất phát (D) và điểm vuông góc trên đáy (H).",
+            explain: "Đường cao xuất phát từ đỉnh D và vuông góc với đáy GE tại H có tên là đường cao DH."
+          }
+        ]
+      },
+      round2: {
+        title: "Vòng 2: Truy Tìm Lỗi Sai",
+        points: 15,
+        seconds: 35,
+        rule: "Vòng 2 (15 điểm/câu): Phát hiện lỗi vẽ sai đường cao, đặc biệt chú ý góc vuông trên lưới và phần kéo dài của đáy.",
+        questions: [
+          {
+            tag: "Vòng 2 • Lỗi sai đỉnh",
+            prompt: "Đoạn màu đỏ đang vẽ sai! Hãy chỉ ra lỗi sai của đường cao ứng với <span class='highlight'>đáy GE</span> trong tam giác DEG.",
+            vertices: {
+              D: { c: 2, r: 1, dx: -14, dy: -6 },
+              E: { c: 6, r: 4, dx: 10, dy: 6 },
+              G: { c: 2, r: 4, dx: -16, dy: 14 }
+            },
+            highlightBase: ["G", "E"],
+            wrongLine: { c1: 4, r1: 2, c2: 4, r2: 4 },
+            options: [
+              "Không xuất phát từ đỉnh đối diện D",
+              "Không vuông góc với đáy GE",
+              "Đường cao GE phải nằm ngang",
+              "Hình vẽ đã đúng"
+            ],
+            answer: 0,
+            hintText: "Nhìn điểm bắt đầu của đoạn màu đỏ: nó có trùng với đỉnh D không?",
+            explain: "Đáy là GE thì đường cao phải hạ từ đỉnh đối diện D. Đoạn đỏ xuất phát từ cạnh DE nên bị sai đỉnh."
+          },
+          {
+            tag: "Vòng 2 • Tam giác góc tù",
+            prompt: "Với tam giác tù IKL có <span class='highlight'>đáy IK</span>, đoạn màu đỏ vẽ như vậy đã đúng chưa?",
+            vertices: {
+              I: { c: 3, r: 2, dx: -14, dy: -6 },
+              K: { c: 6, r: 5, dx: -12, dy: 16 },
+              L: { c: 8, r: 2, dx: 10, dy: -4 }
+            },
+            highlightBase: ["I", "K"],
+            wrongLine: { c1: 8, r1: 2, c2: 5, r2: 4 },
+            options: [
+              "Sai vì không vuông góc với đường thẳng chứa đáy IK",
+              "Sai vì đỉnh L không thể hạ đường cao",
+              "Đúng vì nằm trong tam giác",
+              "Đúng vì xuất phát từ đỉnh L"
+            ],
+            answer: 0,
+            hintText: "Kiểm tra góc tạo bởi đoạn đỏ và đường thẳng đi qua hai điểm I, K.",
+            explain: "Đường cao từ đỉnh L ứng với đáy IK phải vuông góc với đường thẳng IK (kéo dài IK), không phải kẻ xiên tùy ý."
+          },
+          {
+            tag: "Vòng 2 • Không vuông góc",
+            prompt: "Quan sát đoạn màu đỏ nối từ đỉnh D xuống cạnh GE của tam giác DEG. Đây có phải đường cao ứng với đáy GE không?",
+            vertices: {
+              D: { c: 2, r: 1, dx: -14, dy: -6 },
+              E: { c: 7, r: 4, dx: 10, dy: 6 },
+              G: { c: 2, r: 4, dx: -16, dy: 14 }
+            },
+            highlightBase: ["G", "E"],
+            wrongLine: { c1: 2, r1: 1, c2: 4, r2: 4 },
+            options: [
+              "Không, vì không vuông góc với đáy GE",
+              "Không, vì không đi qua đỉnh D",
+              "Có, vì nối đỉnh D với cạnh GE",
+              "Có, vì nằm bên trong tam giác"
+            ],
+            answer: 0,
+            hintText: "Đáy GE nằm ngang; đường vuông góc với đường ngang trên lưới ô vuông phải là đường thẳng đứng.",
+            explain: "Đoạn nối đỉnh D với một điểm trên đáy chỉ là đường cao khi vuông góc với đáy GE."
+          }
+        ]
+      },
+      round3: {
+        title: "Vòng 3: Chạm Vẽ Đỉnh Cao",
+        points: 20,
+        seconds: 40,
+        type: "draw",
+        rule: "Vòng 3 (20 điểm/câu): Chạm 2 nút giao trên lưới ô vuông để vẽ đúng đoạn đường cao ứng với đáy được giao.",
+        questions: [
+          {
+            tag: "Vòng 3 • Đáy nằm ngang",
+            prompt: "Vẽ đường cao ứng với <span class='highlight'>đáy GE</span> của tam giác DEG bằng cách chạm 2 nút giao trên lưới.",
+            vertices: {
+              D: { c: 3, r: 1, dx: -14, dy: -6 },
+              E: { c: 7, r: 4, dx: 10, dy: 6 },
+              G: { c: 2, r: 4, dx: -16, dy: 14 }
+            },
+            highlightBase: ["G", "E"],
+            validSegments: [
+              [{ c: 3, r: 1 }, { c: 3, r: 4 }],
+              [{ c: 3, r: 4 }, { c: 3, r: 1 }]
+            ],
+            rightAngleAt: { c: 3, r: 4 },
+            hintPoint: { c: 3, r: 1 },
+            hintText: "Gợi ý: Bắt đầu từ đỉnh D tại nút giao (cột 3, hàng 1) và hạ thẳng đứng xuống đáy GE.",
+            explain: "Từ đỉnh D(3,1), kẻ đường thẳng đứng vuông góc với đáy GE tại (3,4) ta được đường cao đúng."
+          },
+          {
+            tag: "Vòng 3 • Tam giác góc tù",
+            prompt: "Vẽ đường cao từ đỉnh L ứng với <span class='highlight'>đáy IK</span> (chú ý phần kéo dài của cạnh đáy IK).",
+            vertices: {
+              I: { c: 3, r: 2, dx: -14, dy: -6 },
+              K: { c: 6, r: 5, dx: -12, dy: 16 },
+              L: { c: 8, r: 2, dx: 10, dy: -4 }
+            },
+            highlightBase: ["I", "K"],
+            extensionLine: [{ c: 2, r: 1 }, { c: 6, r: 5 }],
+            validSegments: [
+              [{ c: 8, r: 2 }, { c: 5, r: 5 }],
+              [{ c: 5, r: 5 }, { c: 8, r: 2 }]
+            ],
+            rightAngleAt: { c: 5, r: 5 },
+            hintPoint: { c: 5, r: 5 },
+            hintText: "Gợi ý: Điểm vuông góc trên đường thẳng chứa đáy IK nằm ở nút giao (cột 5, hàng 5).",
+            explain: "Kéo dài cạnh IK qua (5,5); nối từ đỉnh L(8,2) tới (5,5) ta được đường vuông góc với đáy IK."
+          },
+          {
+            tag: "Vòng 3 • Đáy thẳng đứng",
+            prompt: "Trong tam giác DEG, nếu chọn <span class='highlight'>DG</span> làm đáy, hãy vẽ đường cao tương ứng từ đỉnh E.",
+            vertices: {
+              D: { c: 3, r: 1, dx: -14, dy: -6 },
+              E: { c: 7, r: 3, dx: 10, dy: -4 },
+              G: { c: 3, r: 5, dx: -16, dy: 14 }
+            },
+            highlightBase: ["D", "G"],
+            validSegments: [
+              [{ c: 7, r: 3 }, { c: 3, r: 3 }],
+              [{ c: 3, r: 3 }, { c: 7, r: 3 }]
+            ],
+            rightAngleAt: { c: 3, r: 3 },
+            hintPoint: { c: 3, r: 3 },
+            hintText: "Gợi ý: Đáy DG thẳng đứng ở cột 3, nên đường nằm ngang từ đỉnh E(7,3) sẽ vuông góc tại (cột 3, hàng 3).",
+            explain: "Đáy DG nằm trên đường thẳng đứng cột 3, đường cao hạ từ đỉnh E(7,3) nằm ngang tới (3,3)."
+          }
+        ]
+      },
+      round4: {
+        title: "Vòng 4: Thử Thách Nhân Đôi",
+        points: 20,
+        seconds: 25,
+        rule: "Vòng 4 (20 điểm/câu): Thời gian ngắn hơn, điểm cao hơn! Tổng hợp đỉnh đối diện, lỗi sai và vẽ đường cao.",
+        questions: [
+          {
+            tag: "Vòng 4 • Tổng hợp đỉnh & đáy",
+            prompt: "Với tam giác tù IKL, nếu chọn cạnh <span class='highlight'>IL</span> làm đáy thì đỉnh nào đối diện với đáy IL?",
+            vertices: {
+              I: { c: 3, r: 2, dx: -14, dy: -6 },
+              K: { c: 6, r: 5, dx: -12, dy: 16 },
+              L: { c: 8, r: 2, dx: 10, dy: -4 }
+            },
+            highlightBase: ["I", "L"],
+            options: ["Đỉnh I", "Đỉnh L", "Đỉnh K", "Không có đỉnh đối diện"],
+            answer: 2,
+            hintText: "Cạnh đáy nối I và L, vậy đỉnh còn lại là đỉnh nào?",
+            explain: "Đỉnh đối diện với cạnh đáy IL trong tam giác IKL là đỉnh K."
+          },
+          {
+            tag: "Vòng 4 • Phán đoán nhanh",
+            prompt: "Đoạn màu đỏ từ đỉnh D xuống cạnh GE có phải đường cao ứng với đáy GE không?",
+            vertices: {
+              D: { c: 2, r: 1, dx: -14, dy: -6 },
+              E: { c: 6, r: 4, dx: 10, dy: 6 },
+              G: { c: 2, r: 4, dx: -16, dy: 14 }
+            },
+            highlightBase: ["G", "E"],
+            wrongLine: { c1: 2, r1: 1, c2: 5, r2: 4 },
+            options: [
+              "Không, vì bị xiên và không vuông góc với đáy GE",
+              "Có, vì xuất phát từ đỉnh D và chạm cạnh GE",
+              "Không, vì không đi qua đỉnh D",
+              "Có, vì ngắn hơn cạnh DE"
+            ],
+            answer: 0,
+            hintText: "So sánh đoạn màu đỏ với đường thẳng đứng đi qua đỉnh D.",
+            explain: "Đoạn đỏ không vuông góc với đáy GE nên chưa phải là đường cao."
+          },
+          {
+            tag: "Vòng 4 • Chạm vẽ quyết định",
+            prompt: "Vẽ đường cao từ đỉnh D ứng với <span class='highlight'>đáy GE</span> của tam giác DEG để ghi 20 điểm!",
+            type: "draw",
+            vertices: {
+              D: { c: 4, r: 1, dx: 8, dy: -6 },
+              E: { c: 7, r: 4, dx: 10, dy: 6 },
+              G: { c: 2, r: 4, dx: -16, dy: 14 }
+            },
+            highlightBase: ["G", "E"],
+            validSegments: [
+              [{ c: 4, r: 1 }, { c: 4, r: 4 }],
+              [{ c: 4, r: 4 }, { c: 4, r: 1 }]
+            ],
+            rightAngleAt: { c: 4, r: 4 },
+            hintPoint: { c: 4, r: 4 },
+            hintText: "Gợi ý: Từ đỉnh D(4,1), kẻ thẳng đứng xuống đáy GE tại nút giao (cột 4, hàng 4).",
+            explain: "Xuất sắc! Đường cao từ đỉnh D(4,1) vuông góc với đáy GE tại (4,4)."
+          }
+        ]
+      }
+    };
+
+    let currentRound = "round1";
+    let currentIndex = 0;
+    let activeTurn = "A";
+    let scores = { A: 0, B: 0 };
+    let roundScores = {
+      A: { round1: 0, round2: 0, round3: 0, round4: 0 },
+      B: { round1: 0, round2: 0, round3: 0, round4: 0 }
+    };
+    let hintsLeft = { A: 1, B: 1 };
+    let answeredMap = {}; // `${round}-${idx}` -> { winner, points }
+    let eliminatedOptions = {}; // `${round}-${idx}` -> Set of indices
+    let activeHintText = {}; // `${round}-${idx}` -> string
+    let drawnPoints = [];
+    let confirmedSegment = null;
+    let timeLeft = 30;
+    let timerId = null;
+
+    function getTeamName(team) {
+      const val = document.getElementById(team === "A" ? "nameA" : "nameB").value.trim();
+      return val || (team === "A" ? "Đội Tia Chớp" : "Đội Ngôi Sao");
+    }
+
+    function stateKey(round = currentRound, idx = currentIndex) {
+      return `${round}-${idx}`;
+    }
+
+    function isDrawQuestion(q) {
+      return ROUNDS[currentRound].type === "draw" || q.type === "draw";
+    }
+
+    function setTurn(team) {
+      activeTurn = team;
+      updateScoreboard();
+    }
+
+    function swapTurnManual() {
+      activeTurn = activeTurn === "A" ? "B" : "A";
+      updateScoreboard();
+    }
+
+    function updateScoreboard() {
+      document.getElementById("scoreA").textContent = `${scores.A} điểm`;
+      document.getElementById("scoreB").textContent = `${scores.B} điểm`;
+      document.getElementById("hintBadgeA").textContent = `Gợi ý: ${hintsLeft.A}`;
+      document.getElementById("hintBadgeB").textContent = `Gợi ý: ${hintsLeft.B}`;
+
+      const cardA = document.getElementById("cardA");
+      const cardB = document.getElementById("cardB");
+      const pillA = document.getElementById("pillA");
+      const pillB = document.getElementById("pillB");
+
+      cardA.classList.toggle("active-turn", activeTurn === "A");
+      cardB.classList.toggle("active-turn", activeTurn === "B");
+
+      pillA.textContent = activeTurn === "A" ? "ĐANG ĐẾN LƯỢT" : "CHỜ LƯỢT";
+      pillB.textContent = activeTurn === "B" ? "ĐANG ĐẾN LƯỢT" : "CHỜ LƯỢT";
+    }
+
+    function startTimer() {
+      clearInterval(timerId);
+      const r = ROUNDS[currentRound];
+      const key = stateKey();
+      const pill = document.getElementById("timerPill");
+
+      if (answeredMap[key]) {
+        pill.textContent = "Đã hoàn thành";
+        pill.classList.remove("urgent");
+        return;
+      }
+
+      timeLeft = r.seconds;
+      pill.textContent = `Thời gian: ${timeLeft}s`;
+      pill.classList.toggle("urgent", timeLeft <= 8);
+
+      timerId = setInterval(() => {
+        if (answeredMap[stateKey()]) {
+          clearInterval(timerId);
+          return;
+        }
+        timeLeft--;
+        pill.textContent = `Thời gian: ${Math.max(0, timeLeft)}s`;
+        pill.classList.toggle("urgent", timeLeft <= 8);
+
+        if (timeLeft <= 0) {
+          clearInterval(timerId);
+          const q = ROUNDS[currentRound].questions[currentIndex];
+          const k = stateKey();
+          answeredMap[k] = { winner: null, points: 0 };
+          if (!isDrawQuestion(q)) {
+            document.querySelectorAll("#optionsBox .opt-btn").forEach((b, i) => {
+              b.disabled = true;
+              if (i === q.answer) b.classList.add("correct");
+            });
+          } else {
+            document.getElementById("checkDrawBtn").disabled = true;
+          }
+          showFeedback("err", `<strong>Hết giờ ở lượt của ${getTeamName(activeTurn)}!</strong> ${q.explain}`);
+        }
+      }, 1000);
+    }
+
+    function switchRound(round) {
+      currentRound = round;
+      currentIndex = 0;
+      drawnPoints = [];
+      confirmedSegment = null;
+      document.querySelectorAll(".round-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.round === round);
+      });
+      render();
+    }
+
+    function prevQuestion() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        drawnPoints = [];
+        confirmedSegment = null;
+        render();
+      }
+    }
+
+    function nextQuestion() {
+      const list = ROUNDS[currentRound].questions;
+      if (currentIndex < list.length - 1) {
+        currentIndex++;
+        drawnPoints = [];
+        confirmedSegment = null;
+        activeTurn = activeTurn === "A" ? "B" : "A";
+        render();
+      } else {
+        clearInterval(timerId);
+        showSummary();
+      }
+    }
+
+    function useTeamHint() {
+      const key = stateKey();
+      if (answeredMap[key]) return;
+      if (hintsLeft[activeTurn] <= 0) {
+        showFeedback("info", `<strong>${getTeamName(activeTurn)} đã hết thẻ Gợi ý!</strong>`);
+        return;
+      }
+
+      const q = ROUNDS[currentRound].questions[currentIndex];
+      hintsLeft[activeTurn] -= 1;
+
+      if (!isDrawQuestion(q)) {
+        const wrongIndices = q.options
+          .map((_, idx) => idx)
+          .filter(idx => idx !== q.answer);
+        if (!eliminatedOptions[key]) eliminatedOptions[key] = new Set();
+        const pick = wrongIndices.find(idx => !eliminatedOptions[key].has(idx));
+        if (pick !== undefined) {
+          eliminatedOptions[key].add(pick);
+        }
+      } else if (q.hintPoint && drawnPoints.length === 0) {
+        drawnPoints = [q.hintPoint];
+      }
+
+      activeHintText[key] = q.hintText || "Hãy kiểm tra kỹ đỉnh đối diện và tính vuông góc trên lưới ô vuông.";
+      updateScoreboard();
+      render();
+      showFeedback("info", `<strong>${getTeamName(activeTurn)} dùng Gợi ý:</strong> ${activeHintText[key]}`);
+    }
+
+    function render() {
+      const roundObj = ROUNDS[currentRound];
+      const q = roundObj.questions[currentIndex];
+      const key = stateKey();
+      const record = answeredMap[key];
+      const alreadyDone = Boolean(record);
+      const drawMode = isDrawQuestion(q);
+
+      document.getElementById("roundTag").textContent = q.tag;
+      document.getElementById("progressText").textContent = `Câu ${currentIndex + 1} / ${roundObj.questions.length}`;
+      document.getElementById("promptText").innerHTML = q.prompt;
+      document.getElementById("roundRuleBox").innerHTML = `<strong>Thể lệ vòng chơi:</strong> ${roundObj.rule}`;
+
+      const optionsBox = document.getElementById("optionsBox");
+      const drawControls = document.getElementById("drawControls");
+      const drawHint = document.getElementById("drawHint");
+      const quizExtraControls = document.getElementById("quizExtraControls");
+      const feedbackBox = document.getElementById("feedbackBox");
+
+      feedbackBox.className = "feedback";
+      feedbackBox.textContent = "";
+
+      if (drawMode) {
+        optionsBox.style.display = "none";
+        quizExtraControls.style.display = "none";
+        drawControls.style.display = "flex";
+        drawHint.style.display = "block";
+        document.getElementById("checkDrawBtn").disabled = alreadyDone || drawnPoints.length < 2;
+        document.getElementById("hintBtn").disabled = alreadyDone || hintsLeft[activeTurn] <= 0;
+        if (alreadyDone && !confirmedSegment && record.points > 0) {
+          confirmedSegment = q.validSegments[0];
+        }
+        if (alreadyDone) {
+          if (record.winner) {
+            showFeedback("ok", `<strong>${getTeamName(record.winner)} ghi +${record.points} điểm!</strong> ${q.explain}`);
+          } else {
+            showFeedback("err", `<strong>Câu này chưa có đội ghi điểm.</strong> ${q.explain}`);
+          }
+        }
+      } else {
+        optionsBox.style.display = "grid";
+        quizExtraControls.style.display = "flex";
+        drawControls.style.display = "none";
+        drawHint.style.display = "none";
+        document.getElementById("quizHintBtn").disabled = alreadyDone || hintsLeft[activeTurn] <= 0;
+        optionsBox.innerHTML = "";
+
+        const elimSet = eliminatedOptions[key] || new Set();
+        q.options.forEach((optText, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "opt-btn";
+          btn.textContent = optText;
+          const isElim = elimSet.has(idx);
+          btn.disabled = alreadyDone || isElim;
+          if (isElim) {
+            btn.style.opacity = "0.35";
+            btn.style.textDecoration = "line-through";
+          }
+          if (alreadyDone && idx === q.answer) {
+            btn.classList.add("correct");
+          }
+          btn.onclick = () => handleQuizAnswer(idx, btn);
+          optionsBox.appendChild(btn);
+        });
+
+        if (alreadyDone) {
+          if (record.winner) {
+            showFeedback("ok", `<strong>${getTeamName(record.winner)} đã ghi +${record.points} điểm.</strong> ${q.explain}`);
+          } else {
+            showFeedback("err", `<strong>Chưa có điểm ở câu này.</strong> ${q.explain}`);
+          }
+        }
+      }
+
+      document.getElementById("prevBtn").disabled = currentIndex === 0;
+      const nextBtn = document.getElementById("nextBtn");
+      nextBtn.textContent = currentIndex === roundObj.questions.length - 1 ? "Tổng kết vòng ✓" : "Câu tiếp theo →";
+
+      drawBoard(q, drawMode);
+      updateScoreboard();
+      startTimer();
+    }
+
+    function awardPoints(team, pts) {
+      scores[team] += pts;
+      roundScores[team][currentRound] += pts;
+    }
+
+    function handleQuizAnswer(selectedIdx, btnEl) {
+      const roundObj = ROUNDS[currentRound];
+      const q = roundObj.questions[currentIndex];
+      const key = stateKey();
+      if (answeredMap[key]) return;
+
+      clearInterval(timerId);
+      const allBtns = document.querySelectorAll("#optionsBox .opt-btn");
+      allBtns.forEach(b => (b.disabled = true));
+
+      const teamName = getTeamName(activeTurn);
+      if (selectedIdx === q.answer) {
+        btnEl.classList.add("correct");
+        awardPoints(activeTurn, roundObj.points);
+        answeredMap[key] = { winner: activeTurn, points: roundObj.points };
+        showFeedback("ok", `<strong>Chính xác! ${teamName} nhận +${roundObj.points} điểm.</strong> ${q.explain}`);
+      } else {
+        btnEl.classList.add("wrong");
+        allBtns[q.answer].classList.add("correct");
+        answeredMap[key] = { winner: null, points: 0 };
+        showFeedback("err", `<strong>${teamName} trả lời chưa đúng!</strong> ${q.explain}`);
+      }
+      document.getElementById("timerPill").textContent = "Đã hoàn thành";
+      document.getElementById("timerPill").classList.remove("urgent");
+      updateScoreboard();
+    }
+
+    function showFeedback(type, html) {
+      const box = document.getElementById("feedbackBox");
+      box.className = `feedback show ${type}`;
+      box.innerHTML = html;
+    }
+
+    function undoDraw() {
+      if (answeredMap[stateKey()]) return;
+      drawnPoints.pop();
+      document.getElementById("checkDrawBtn").disabled = drawnPoints.length < 2;
+      drawBoard(ROUNDS[currentRound].questions[currentIndex], true);
+    }
+
+    function clearDraw() {
+      if (answeredMap[stateKey()]) return;
+      drawnPoints = [];
+      confirmedSegment = null;
+      document.getElementById("checkDrawBtn").disabled = true;
+      drawBoard(ROUNDS[currentRound].questions[currentIndex], true);
+    }
+
+    function samePoint(a, b) {
+      return a && b && a.c === b.c && a.r === b.r;
+    }
+
+    function checkDrawing() {
+      const roundObj = ROUNDS[currentRound];
+      const q = roundObj.questions[currentIndex];
+      const key = stateKey();
+      if (drawnPoints.length < 2 || answeredMap[key]) return;
+
+      const [p1, p2] = drawnPoints;
+      const isValid = q.validSegments.some(
+        ([s1, s2]) => (samePoint(p1, s1) && samePoint(p2, s2)) || (samePoint(p1, s2) && samePoint(p2, s1))
+      );
+
+      const teamName = getTeamName(activeTurn);
+      if (isValid) {
+        clearInterval(timerId);
+        confirmedSegment = [p1, p2];
+        awardPoints(activeTurn, roundObj.points);
+        answeredMap[key] = { winner: activeTurn, points: roundObj.points };
+        document.getElementById("checkDrawBtn").disabled = true;
+        document.getElementById("timerPill").textContent = "Đã hoàn thành";
+        document.getElementById("timerPill").classList.remove("urgent");
+        drawBoard(q, true);
+        showFeedback("ok", `<strong>Đường cao chuẩn xác! ${teamName} nhận +${roundObj.points} điểm.</strong> ${q.explain}`);
+      } else {
+        showFeedback(
+          "err",
+          `<strong>${teamName} kiểm tra lại nhé!</strong> Đường cao cần nối từ <strong>đỉnh đối diện</strong> và <strong>vuông góc với đáy</strong> (hoặc phần kéo dài của đáy).`
+        );
+      }
+      updateScoreboard();
+    }
+
+    function drawBoard(q, drawMode) {
+      const svg = document.getElementById("board");
+      svg.innerHTML = "";
+
+      const ns = "http://www.w3.org/2000/svg";
+      function el(tag, attrs = {}) {
+        const node = document.createElementNS(ns, tag);
+        for (const [k, v] of Object.entries(attrs)) {
+          node.setAttribute(k, v);
+        }
+        return node;
+      }
+
+      svg.appendChild(el("rect", {
+        x: OX, y: OY,
+        width: COLS * CELL, height: ROWS * CELL,
+        fill: "#ffffff", stroke: "#93c5fd", "stroke-width": 1.5
+      }));
+
+      for (let c = 1; c < COLS; c++) {
+        svg.appendChild(el("line", {
+          x1: gx(c), y1: OY, x2: gx(c), y2: gy(ROWS),
+          stroke: "#e2e8f0", "stroke-width": 1
+        }));
+      }
+      for (let r = 1; r < ROWS; r++) {
+        svg.appendChild(el("line", {
+          x1: OX, y1: gy(r), x2: gx(COLS), y2: gy(r),
+          stroke: "#e2e8f0", "stroke-width": 1
+        }));
+      }
+
+      if (q.extensionLine) {
+        const [e1, e2] = q.extensionLine;
+        svg.appendChild(el("line", {
+          x1: gx(e1.c), y1: gy(e1.r),
+          x2: gx(e2.c), y2: gy(e2.r),
+          stroke: "#94a3b8",
+          "stroke-width": 2.2,
+          "stroke-dasharray": "6 5"
+        }));
+      }
+
+      const vKeys = Object.keys(q.vertices);
+      const pts = vKeys.map(k => `${gx(q.vertices[k].c)},${gy(q.vertices[k].r)}`).join(" ");
+      svg.appendChild(el("polygon", {
+        points: pts,
+        fill: "rgba(59, 130, 246, 0.10)",
+        stroke: "#1e293b",
+        "stroke-width": 2.4,
+        "stroke-linejoin": "round"
+      }));
+
+      if (q.highlightBase && q.highlightBase.length === 2) {
+        const b1 = q.vertices[q.highlightBase[0]];
+        const b2 = q.vertices[q.highlightBase[1]];
+        svg.appendChild(el("line", {
+          x1: gx(b1.c), y1: gy(b1.r),
+          x2: gx(b2.c), y2: gy(b2.r),
+          stroke: "#2563eb",
+          "stroke-width": 5,
+          "stroke-linecap": "round"
+        }));
+      }
+
+      if (q.wrongLine) {
+        svg.appendChild(el("line", {
+          x1: gx(q.wrongLine.c1), y1: gy(q.wrongLine.r1),
+          x2: gx(q.wrongLine.c2), y2: gy(q.wrongLine.r2),
+          stroke: "#dc2626",
+          "stroke-width": 3,
+          "stroke-dasharray": "7 5"
+        }));
+      }
+
+      if (drawMode) {
+        const seg = confirmedSegment || (drawnPoints.length === 2 ? drawnPoints : null);
+        if (seg) {
+          svg.appendChild(el("line", {
+            x1: gx(seg[0].c), y1: gy(seg[0].r),
+            x2: gx(seg[1].c), y2: gy(seg[1].r),
+            stroke: confirmedSegment ? "#15803d" : "#0ea5e9",
+            "stroke-width": 3.5,
+            "stroke-linecap": "round"
+          }));
+        }
+        if (confirmedSegment && q.rightAngleAt) {
+          const rx = gx(q.rightAngleAt.c);
+          const ry = gy(q.rightAngleAt.r);
+          svg.appendChild(el("rect", {
+            x: rx - 8, y: ry - 8, width: 16, height: 16,
+            fill: "none", stroke: "#15803d", "stroke-width": 2
+          }));
+        }
+
+        for (let c = 1; c < COLS; c++) {
+          for (let r = 1; r < ROWS; r++) {
+            const isSelected = drawnPoints.some(p => p.c === c && p.r === r);
+            const dot = el("circle", {
+              cx: gx(c), cy: gy(r),
+              r: isSelected ? 7.5 : 4.5,
+              fill: isSelected ? "#0284c7" : "rgba(30, 64, 175, 0.25)",
+              stroke: isSelected ? "#ffffff" : "none",
+              "stroke-width": 2,
+              style: "cursor: pointer;"
+            });
+            dot.addEventListener("click", () => handleGridTap(c, r));
+            svg.appendChild(dot);
+          }
+        }
+      }
+
+      vKeys.forEach(k => {
+        const v = q.vertices[k];
+        const cx = gx(v.c);
+        const cy = gy(v.r);
+        svg.appendChild(el("circle", {
+          cx, cy, r: 5, fill: "#0f172a"
+        }));
+        const label = el("text", {
+          x: cx + (v.dx || 0),
+          y: cy + (v.dy || 0),
+          fill: "#0f172a",
+          "font-size": "16",
+          "font-weight": "800"
+        });
+        label.textContent = k;
+        svg.appendChild(label);
+      });
+    }
+
+    function handleGridTap(c, r) {
+      if (answeredMap[stateKey()]) return;
+      const pt = { c, r };
+      if (drawnPoints.length === 0) {
+        drawnPoints = [pt];
+      } else if (drawnPoints.length === 1) {
+        if (samePoint(drawnPoints[0], pt)) {
+          drawnPoints = [];
+        } else {
+          drawnPoints = [drawnPoints[0], pt];
+        }
+      } else {
+        drawnPoints = [pt];
+      }
+      document.getElementById("checkDrawBtn").disabled = drawnPoints.length < 2;
+      drawBoard(ROUNDS[currentRound].questions[currentIndex], true);
+    }
+
+    function showSummary() {
+      const nameA = getTeamName("A");
+      const nameB = getTeamName("B");
+      let winnerText = "Hai đội ngang tài hòa điểm!";
+      if (scores.A > scores.B) winnerText = `${nameA} dẫn đầu với ${scores.A} điểm!`;
+      else if (scores.B > scores.A) winnerText = `${nameB} dẫn đầu với ${scores.B} điểm!`;
+
+      document.getElementById("modeTag") && (document.getElementById("modeTag").textContent = "Hoàn thành vòng");
+      document.getElementById("roundTag").textContent = "Tổng kết";
+      document.getElementById("progressText").textContent = "Bảng điểm vòng";
+      document.getElementById("timerPill").textContent = "Hết vòng";
+      document.getElementById("timerPill").classList.remove("urgent");
+
+      document.getElementById("promptText").innerHTML = `
+        <div class="summary-box">
+          <div class="winner-banner">${winnerText}</div>
+          <p style="font-size:1.05rem;font-weight:700;margin:8px 0;">
+            Tổng điểm trận đấu: ${nameA}: <strong>${scores.A}</strong> điểm &nbsp;|&nbsp; ${nameB}: <strong>${scores.B}</strong> điểm
+          </p>
+          <div class="round-breakdown">
+            <div><strong>Điểm vòng hiện tại (${ROUNDS[currentRound].title}):</strong></div>
+            <div style="margin-top:6px;">• ${nameA}: ${roundScores.A[currentRound]} điểm</div>
+            <div>• ${nameB}: ${roundScores.B[currentRound]} điểm</div>
+          </div>
+          <p style="color:#475569;font-weight:500;margin:10px 0 14px;">
+            Chọn vòng khác ở thanh phía trên để đấu tiếp các vòng còn lại, hoặc bấm chơi ván mới.
+          </p>
+          <button class="btn btn-primary" onclick="resetMatch()">Chơi ván mới</button>
+        </div>
+      `;
+      document.getElementById("board").innerHTML = "";
+      document.getElementById("optionsBox").innerHTML = "";
+      document.getElementById("drawControls").style.display = "none";
+      document.getElementById("drawHint").style.display = "none";
+      document.getElementById("quizExtraControls").style.display = "none";
+      document.getElementById("feedbackBox").className = "feedback";
+    }
+
+    function resetMatch() {
+      clearInterval(timerId);
+      scores = { A: 0, B: 0 };
+      roundScores = {
+        A: { round1: 0, round2: 0, round3: 0, round4: 0 },
+        B: { round1: 0, round2: 0, round3: 0, round4: 0 }
+      };
+      hintsLeft = { A: 1, B: 1 };
+      activeTurn = "A";
+      answeredMap = {};
+      eliminatedOptions = {};
+      activeHintText = {};
+      drawnPoints = [];
+      confirmedSegment = null;
+      currentIndex = 0;
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>
